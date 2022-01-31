@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TO-Do list</title>
+    
+</head>
+<body>
+    <form id="addtask">
+        <input type="text" id="task" placeholder="Enter a task"/>
+        <input type="checkbox" id="checkBox" checked/>
+        <br/><br/>
+        <input type="submit"id="submit" value="add"/>
+    </form>
+    <div id="taskCont" ></div>
+        
+    <script>
+        var form = document.querySelector("form")
+form.addEventListener('submit' , addData)
+function addData(event){
+    var task = document.getElementById("task").value;
+    var checkBox = document.getElementById("checkBox");
+    event.preventDefault()
+   
+
+// GET Request.
+fetch("https://json-server-mocker-masai.herokuapp.com/tasks", {
+    method: "GET",
+    headers: { "Content-type": "application/json;charset=UTF-8" },
+  })
+    .then((response) => response.json())
+    .then((json) => console.log(json))
+    .catch((err) => console.log(err));
+
+    //POST Request
+    //Send all the task as payload JSON
+   //data to be sent to the POST request
+    let _data = {
+        "title": task,
+        "status": checkBox.checked
+    };
+    
+    fetch("https://json-server-mocker-masai.herokuapp.com/tasks", {
+    method: "POST",
+    body: JSON.stringify(_data),
+    headers: { "Content-type": "application/json; charset=UTF-8" },
+    })
+    .then((response) => response.json())
+    .then((json) => console.log(json))
+    .catch((err) => console.log(err));
+
+    // data to be sent to the DELETE request
+fetch("https://json-server-mocker-masai.herokuapp.com/tasks/19", {
+    method: "DELETE",
+    headers: { "Content-type": "application/json; charset=UTF-8" },
+  })
+    .then((response) => response.json())
+    .then((json) => console.log(json))
+    .catch((err) => console.log(err));
+
+    fetch("https://json-server-mocker-masai.herokuapp.com/tasks")
+                .then(function(res){
+                    return res.json();
+                })
+                .then(function(final_res){
+                    console.log(final_res.data)
+                    display(final_res)
+                })
+                .catch(function(err){
+                    console.log(err)
+                })
+
+    var container = document.getElementById("taskCont");
+    function display(data){
+        data.forEach(element => {
+            // console.log("elem:",element)
+            var h1 = document.createElement("h1")
+            h1.innerText = element.title
+            
+            if(element.status === true){
+                h1.style.color = "green"
+            }
+            else{
+                h1.style.color = "red"
+            }
+            
+            container.appendChild(h1)
+        });
+    }
+
+}
+    </script>
+</body>
+</html>
